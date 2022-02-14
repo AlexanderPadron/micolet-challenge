@@ -1,0 +1,45 @@
+<%= form_for @users do |f| %>
+  <img class="mb-4" src="https://d30o7qbghf97ws.cloudfront.net/micolet-logo.svg" alt="" width="330" height="100">
+  <p class="mt-5 mb-3 text-muted"><%= t 'welcome' %></p>
+  <p class="mt-5 mb-2 text-muted"><%= t 'submsg' %></p>
+  
+  <label for="inputEmail" class="sr-only">Email</label>
+  <%= f.email_field :email %>
+  <hr>  
+  <p>Preferences:</p>
+  <div class="checkbox mb-3">
+    <label>
+    <%= f.check_box :women %> Women
+    <%= f.check_box :men %> Men
+    <%= f.check_box :children %> Children
+    </label>
+  </div>
+  <button class="btn btn-lg btn-success btn-block" type="submit" id="user_submit">Subscribe me!</button>
+</form>
+
+<script>
+
+document.getElementById('new_user').addEventListener('submit', function(evt){
+  evt.preventDefault();
+  let women = document.getElementById('user_women').checked;
+  let men = document.getElementById('user_men').checked;
+  let children = document.getElementById('user_children').checked;
+  if(!women && !men && !children){
+    alert('Please select 1 preferences to continue')
+  }
+  let email = document.getElementById('user_email').value;
+  document.getElementById('user_submit').disabled = true;
+  axios.get('https://emailvalidation.abstractapi.com/v1/?api_key=152b54925f094023b303a4a7e37c2522&email='+email)
+    .then(response => {
+        if(parseFloat(response.data.quality_score) >= 0.70){
+          console.log('Continuamos')
+          document.getElementById("new_user").submit();
+        }
+    })
+    .catch(error => {
+        console.log(error);
+    });
+    document.getElementById('user_submit').disabled = false;
+});
+</script>
+<% end %>
